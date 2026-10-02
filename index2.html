@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LifeClock – Your Life, Counted</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f6;--card:#fff;--ink:#0f1b33;--mut:#5a6580;--line:#dde3ee;--acc:#3b4cca;--hot:#d9480f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#141b30;--ink:#e9edf7;--mut:#98a2bd;--line:#27304b;--acc:#8da2ff;--hot:#ff9a62}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#141b30;--ink:#e9edf7;--mut:#98a2bd;--line:#27304b;--acc:#8da2ff;--hot:#ff9a62}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,.num{font-family:"Space Grotesk",Inter,system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.hero{background:linear-gradient(140deg,#0f1b33,#22326b);color:#fff;padding:56px 0 48px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.05;margin:0 0 12px;letter-spacing:-.02em}
+.hero p{max-width:540px;color:#c4cde6;margin:0 0 24px}
+form{display:flex;gap:10px;flex-wrap:wrap}
+input[type=date]{font:inherit;padding:13px 16px;border-radius:10px;border:2px solid #4a5a99;background:#fff;color:#0f1b33;min-width:200px}
+button{font:inherit;font-weight:600;padding:13px 24px;border-radius:999px;border:0;background:#ffb703;color:#1a1a1a;cursor:pointer}
+button:hover{background:#ffc83d}
+:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+#err{color:#ffb4a2;min-height:1.5em;margin:10px 0 0}
+section{margin:28px 0}
+h2{font-size:1.5rem;margin:0 0 14px;letter-spacing:-.01em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.tick{background:linear-gradient(140deg,#0f1b33,#22326b);color:#fff;border:0;border-radius:22px;padding:30px 26px;margin-top:-26px;position:relative}
+.tick .big{font-size:clamp(2.2rem,9vw,4.6rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;word-break:break-all}
+.tick p{margin:6px 0 0;color:#c4cde6}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.stat b{display:block;font-size:1.55rem;color:var(--acc);word-break:break-all}
+.stat span,.fact span{color:var(--mut);font-size:.88rem}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.fact b{display:block;font-size:1.2rem;margin:2px 0}
+.fact small{color:var(--mut)}
+.sym{font-size:2.4rem;line-height:1;float:right;color:var(--hot)}
+.two{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.links a{color:var(--acc);font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:var(--card)}
+.links a:hover{border-color:var(--acc)}
+.pie{display:flex;gap:28px;flex-wrap:wrap;align-items:center;justify-content:center}
+.donut{width:250px;height:250px;border-radius:50%;display:grid;place-items:center;flex:none}
+.hole{width:62%;height:62%;border-radius:50%;background:var(--card);display:grid;place-content:center;text-align:center}
+.hole b{font-size:1.4rem}.hole span{color:var(--mut);font-size:.8rem}
+.leg{flex:1;min-width:250px;display:grid;gap:7px}
+.leg div{display:grid;grid-template-columns:14px 1fr auto 48px;gap:10px;align-items:center;font-size:.93rem}
+.leg i{width:14px;height:14px;border-radius:4px}
+.leg em{color:var(--mut);font-style:normal;text-align:right}
+.sl{display:grid;gap:10px 28px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.sl label{display:grid;grid-template-columns:130px 1fr 44px;gap:10px;align-items:center;font-size:.9rem}
+.sl input{accent-color:var(--acc);width:100%}
+.sl b{text-align:right}
+#warn{color:var(--hot);font-weight:600;min-height:1.4em;margin:10px 0 0}
+.tl{max-height:430px;overflow-y:auto;margin:0;padding:0;list-style:none}
+.tl li{display:grid;grid-template-columns:62px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.tl li:last-child{border:0}
+.tl .y{font-weight:700;color:var(--acc)}
+.tl small{display:block;color:var(--mut)}
+footer{color:var(--mut);font-size:.85rem;padding:10px 0 40px}
+@media (prefers-reduced-motion:no-preference){.tick{animation:rise .5s ease-out}@keyframes rise{from{opacity:0;transform:translateY(10px)}}}
+</style></head><body>
+<header class="hero"><div class="wrap">
+<h1>Your life, counted.</h1>
+<p>Enter your date of birth to see how long you have been here, what the world was doing when you arrived, and where your time has gone.</p>
+<form id="f"><input type="date" id="dob" min="1900-01-01" required aria-label="Date of birth"><button type="submit">Show my life</button></form>
+<p id="err" role="alert"></p>
+</div></header>
+<main class="wrap" id="out" hidden>
+<section class="tick"><div class="big num" id="big"></div><p>seconds lived, and counting &middot; <span id="age"></span></p></section>
+<section><h2>Your time on Earth</h2><div class="grid" id="stats"></div></section>
+<section><h2>The day you arrived</h2><div class="grid" id="born"></div></section>
+<section><h2>The world when you were born</h2><div class="two" id="world"></div></section>
+<section><h2>Where your lifetime has gone</h2><div class="card">
+<div class="pie"><div class="donut" id="pie"><div class="hole"><b class="num" id="tot"></b><span>hours lived</span></div></div><div class="leg" id="leg"></div></div>
+<div class="sl" id="sl"></div><p id="warn" role="status"></p>
+<small style="color:var(--mut)">Drag the sliders to match your own routine (average hours per day). School and homework count only from age 5. Whatever is left over becomes play, hobbies and other.</small>
+</div></section>
+<section><h2>Milestones in your lifetime</h2><div class="card"><ul class="tl" id="tl"></ul></div></section>
+</main>
+<div class="wrap"><footer>Figures are estimates for fun. Songs are the US Billboard year-end #1; milestones are a curated selection, not a complete record.</footer></div>
+<script>
+const $=s=>document.querySelector(s),L=n=>Math.floor(n).toLocaleString();
+const SG={1960:"Theme from A Summer Place — Percy Faith",1961:"Tossin' and Turnin' — Bobby Lewis",1962:"Stranger on the Shore — Acker Bilk",1963:"Surfin' U.S.A. — The Beach Boys",1964:"I Want to Hold Your Hand — The Beatles",1965:"Wooly Bully — Sam the Sham & the Pharaohs",1966:"The Ballad of the Green Berets — SSgt Barry Sadler",1967:"To Sir with Love — Lulu",1968:"Hey Jude — The Beatles",1969:"Sugar, Sugar — The Archies",1970:"Bridge over Troubled Water — Simon & Garfunkel",1971:"Joy to the World — Three Dog Night",1972:"The First Time Ever I Saw Your Face — Roberta Flack",1973:"Tie a Yellow Ribbon Round the Ole Oak Tree — Dawn",1974:"The Way We Were — Barbra Streisand",1975:"Love Will Keep Us Together — Captain & Tennille",1976:"Silly Love Songs — Wings",1977:"You Light Up My Life — Debby Boone",1978:"Shadow Dancing — Andy Gibb",1979:"My Sharona — The Knack",1980:"Call Me — Blondie",1981:"Bette Davis Eyes — Kim Carnes",1982:"Physical — Olivia Newton-John",1983:"Every Breath You Take — The Police",1984:"When Doves Cry — Prince",1985:"Careless Whisper — Wham!",1986:"That's What Friends Are For — Dionne & Friends",1987:"Walk Like an Egyptian — The Bangles",1988:"Faith — George Michael",1989:"Look Away — Chicago",1990:"Hold On — Wilson Phillips",1991:"(Everything I Do) I Do It for You — Bryan Adams",1992:"End of the Road — Boyz II Men",1993:"I Will Always Love You — Whitney Houston",1994:"The Sign — Ace of Base",1995:"Gangsta's Paradise — Coolio",1996:"Macarena — Los del Río",1997:"Candle in the Wind 1997 — Elton John",1998:"The Boy Is Mine — Brandy & Monica",1999:"Believe — Cher",2000:"Breathe — Faith Hill",2001:"Hanging by a Moment — Lifehouse",2002:"How You Remind Me — Nickelback",2003:"In Da Club — 50 Cent",2004:"Yeah! — Usher ft. Lil Jon & Ludacris",2005:"We Belong Together — Mariah Carey",2006:"Bad Day — Daniel Powter",2007:"Irreplaceable — Beyoncé",2008:"Low — Flo Rida ft. T-Pain",2009:"Boom Boom Pow — The Black Eyed Peas",2010:"Tik Tok — Kesha",2011:"Rolling in the Deep — Adele",2012:"Somebody That I Used to Know — Gotye",2013:"Thrift Shop — Macklemore & Ryan Lewis",2014:"Happy — Pharrell Williams",2015:"Uptown Funk — Mark Ronson ft. Bruno Mars",2016:"Love Yourself — Justin Bieber",2017:"Shape of You — Ed Sheeran",2018:"God's Plan — Drake",2019:"Old Town Road — Lil Nas X",2020:"Blinding Lights — The Weeknd",2021:"Levitating — Dua Lipa",2022:"Heat Waves — Glass Animals",2023:"Flowers — Miley Cyrus",2024:"Lose Control — Teddy Swims"};
+const EV={1960:"The first working laser is demonstrated",1961:"Yuri Gagarin becomes the first human in space",1962:"The Cuban Missile Crisis brings the world to the brink",1963:"President John F. Kennedy is assassinated",1964:"The Beatles arrive in America and the Tokyo Olympics open",1965:"Alexei Leonov makes the first spacewalk",1966:"Luna 9 makes the first soft landing on the Moon",1967:"The first human heart transplant is performed",1968:"Martin Luther King Jr. is assassinated",1969:"Apollo 11 lands humans on the Moon",1970:"The first Earth Day is held",1971:"The first email is sent over a network",1972:"Atari releases Pong, the first hit arcade video game",1973:"The first handheld mobile phone call is made",1974:"Erno Rubik invents the Rubik's Cube",1975:"Microsoft is founded",1976:"Apple is founded",1977:"Star Wars premieres",1978:"Louise Brown, the first 'test-tube baby', is born",1979:"Sony launches the Walkman",1980:"Mount St. Helens erupts",1981:"Space Shuttle Columbia makes the first shuttle flight",1982:"The first compact discs go on sale",1983:"India wins its first Cricket World Cup and the Internet adopts TCP/IP",1984:"Apple launches the Macintosh",1985:"Microsoft releases Windows 1.0",1986:"The Chernobyl disaster occurs",1987:"The Montreal Protocol to protect the ozone layer is signed",1988:"Stephen Hawking publishes A Brief History of Time",1989:"The Berlin Wall falls and Tim Berners-Lee proposes the World Wide Web",1990:"The Hubble Space Telescope launches and Nelson Mandela is freed",1991:"The Soviet Union dissolves and India opens up its economy",1992:"The first text message (SMS) is sent",1993:"The European Union is formally established",1994:"Nelson Mandela becomes President of South Africa",1995:"Windows 95, Java and JavaScript are released",1996:"Dolly the sheep becomes the first cloned mammal",1997:"IBM's Deep Blue beats chess champion Garry Kasparov",1998:"Google is founded and the first ISS module launches",1999:"The euro is introduced",2000:"The first draft of the human genome is announced",2001:"Wikipedia launches and Apple unveils the iPod",2002:"Euro notes and coins enter circulation",2003:"The Human Genome Project is completed",2004:"Facebook launches and two rovers land on Mars",2005:"YouTube is founded",2006:"Twitter launches and Pluto is reclassified as a dwarf planet",2007:"Apple releases the first iPhone",2008:"The Large Hadron Collider starts up and Chandrayaan-1 launches",2009:"The Bitcoin network goes live",2010:"Instagram launches and Apple releases the iPad",2011:"India wins the Cricket World Cup on home soil",2012:"The Higgs boson discovery is announced",2013:"Pope Francis is elected and India launches Mangalyaan",2014:"India's Mars Orbiter reaches Mars on its first attempt",2015:"The Paris Climate Agreement is adopted",2016:"Gravitational waves are detected and Jio launches in India",2017:"ISRO launches a record 104 satellites in one mission",2018:"SpaceX Falcon Heavy launches its first rocket",2019:"The first photograph of a black hole is released",2020:"The COVID-19 pandemic is declared",2021:"Mars helicopter Ingenuity makes the first powered flight on another planet",2022:"ChatGPT launches and the James Webb Space Telescope shares its first images",2023:"Chandrayaan-3 lands near the Moon's south pole",2024:"India wins the T20 World Cup",2025:"Shubhanshu Shukla becomes the first Indian astronaut on the ISS"};
+const Z=[[120,"Aquarius","♒","Air"],[219,"Pisces","♓","Water"],[321,"Aries","♈","Fire"],[420,"Taurus","♉","Earth"],[521,"Gemini","♊","Air"],[621,"Cancer","♋","Water"],[723,"Leo","♌","Fire"],[823,"Virgo","♍","Earth"],[923,"Libra","♎","Air"],[1023,"Scorpio","♏","Water"],[1122,"Sagittarius","♐","Fire"],[1222,"Capricorn","♑","Earth"]];
+const CZ="🐀 Rat,🐂 Ox,🐅 Tiger,🐇 Rabbit,🐉 Dragon,🐍 Snake,🐎 Horse,🐐 Goat,🐒 Monkey,🐓 Rooster,🐕 Dog,🐖 Pig".split(",");
+const BS="Garnet,Amethyst,Aquamarine,Diamond,Emerald,Pearl,Ruby,Peridot,Sapphire,Opal,Topaz,Turquoise".split(",");
+const MN="January,February,March,April,May,June,July,August,September,October,November,December".split(",");
+const WD=["is bonny, blithe and cheerful","is fair of face","is full of grace","is full of curiosity","has far to go","is loving and giving","works hard for a living"];
+const ACT=[["Sleep",8,"#4c5fd5"],["School / college",5,"#e09f3e"],["Homework & study",1.5,"#b5179e"],["Eating",1.5,"#2a9d8f"],["Phone, TV & games",2.5,"#e76f51"],["Travel & commuting",1,"#6d597a"],["Exercise & sports",1,"#43aa8b"],["Family & friends",1,"#f4a261"],["Hygiene & chores",1,"#577590"]];
+const S=[["Days","d"],["Weeks","w"],["Months","mo"],["Hours","h"],["Minutes","mi"],["Seconds","s"],["Heartbeats (est.)","hb"],["Breaths (est.)","br"]];
+let B,D=0,MO=0;
+function err(t){$('#err').textContent=t}
+function dur(h){const d=h/24;return d>=730?(d/365.25).toFixed(1)+" yrs":d>=2?L(d)+" days":L(h)+" hrs"}
+function pie(){
+ const t=Math.max(D,1)*24,hrs=ACT.map((a,i)=>a[1]*(i==1||i==2?Math.max(0,D-1826):Math.max(D,1)));
+ const used=hrs.reduce((a,b)=>a+b,0),sum=ACT.reduce((a,b)=>a+b[1],0);hrs.push(Math.max(0,t-used));
+ const tot=Math.max(t,used),cols=ACT.map(a=>a[2]).concat("#adb5bd"),nm=ACT.map(a=>a[0]).concat("Hobbies, play & other");
+ let acc=0;const g=hrs.map((h,i)=>{const s=acc/tot*100;acc+=h;return cols[i]+" "+s+"% "+acc/tot*100+"%"}).join(",");
+ $('#pie').style.background="conic-gradient("+g+")";$('#tot').textContent=L(D*24);
+ $('#leg').innerHTML=hrs.map((h,i)=>`<div><i style="background:${cols[i]}"></i><span>${nm[i]}</span><em>${dur(h)}</em><b>${(h/tot*100).toFixed(1)}%</b></div>`).join("");
+ $('#warn').textContent=sum>24?"That adds up to "+sum+" hours a day. Lower something to fit in 24.":""}
+function tick(){if(!B)return;const ms=Date.now()-B.getTime(),V={d:D,w:Math.floor(D/7),mo:MO,h:Math.floor(ms/36e5),mi:Math.floor(ms/6e4),s:Math.floor(ms/1e3),hb:Math.floor(ms/864e5*100800),br:Math.floor(ms/864e5*21600)};
+ for(const k in V)$('#v_'+k).textContent=V[k].toLocaleString();$('#big').textContent=V.s.toLocaleString()}
+function go(v){
+ const m=(v||"").match(/^(\d{4})-(\d\d)-(\d\d)$/);if(!m)return err("Pick your date of birth to continue.");
+ const by=+m[1],bm=+m[2],bd=+m[3],N=new Date(),ny=N.getFullYear(),nm=N.getMonth()+1,nd=N.getDate();
+ B=new Date(by,bm-1,bd);
+ if(by<1900||B>N)return err(by<1900?"Enter a year from 1900 onwards.":"That date is in the future. Enter a date on or before today.");
+ err("");try{localStorage.setItem("lc_dob",v)}catch(e){}
+ D=Math.floor((Date.UTC(ny,nm-1,nd)-Date.UTC(by,bm-1,bd))/864e5);
+ MO=(ny-by)*12+(nm-bm)-(nd<bd?1:0);
+ let y=ny-by,mo=nm-bm,d=nd-bd;if(d<0){mo--;d+=new Date(ny,nm-1,0).getDate()}if(mo<0){y--;mo+=12}
+ $('#age').textContent=`you are ${y} years, ${mo} months and ${d} days old`;
+ $('#stats').innerHTML=S.map(s=>`<div class="stat"><b class="num" id="v_${s[1]}"></b><span>${s[0]}</span></div>`).join("");
+ const z=Z.reduce((r,x)=>m_(bm*100+bd)>=x[0]?x:r,[0,"Capricorn","♑","Earth"]);
+ function m_(k){return k}
+ const wd=B.getDay(),nb0=new Date(ny,nm-1,nd);let nb=new Date(ny,bm-1,bd);if(nb<nb0)nb=new Date(ny+1,bm-1,bd);
+ const left=Math.round((nb-nb0)/864e5);
+ $('#born').innerHTML=[
+  ["Born on",B.toLocaleDateString(undefined,{weekday:"long"}),B.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})+". Old rhyme: "+["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][wd]+"'s child "+WD[wd]+"."],
+  ["Western zodiac",z[1],z[3]+" sign",z[2]],
+  ["Chinese zodiac",CZ[((by-4)%12+12)%12],"By calendar year; January–February births may belong to the previous animal."],
+  ["Birthstone",BS[bm-1],MN[bm-1]],
+  ["Next birthday",left?L(left)+" days to go":"It's today!",left?"You turn "+(nb.getFullYear()-by)+" on "+nb.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}):"Happy birthday!"]
+ ].map(f=>`<div class="fact"><span>${f[0]}</span>${f[3]?`<div class="sym" aria-hidden="true">${f[3]}</div>`:""}<b class="num">${f[1]}</b><small>${f[2]}</small></div>`).join("");
+ const sy=Math.min(Math.max(by,1960),2024),ey=Math.min(Math.max(by,1960),2025);
+ const bb=by>=1958?`<a href="https://www.billboard.com/charts/hot-100/${v}/" target="_blank" rel="noopener">Hot 100 on your birthday</a>`:"";
+ $('#world').innerHTML=`<div class="fact"><span>Chart-topper of ${sy}</span><b class="num">${SG[sy].split(" — ")[0]}</b><small>${SG[sy].split(" — ")[1]} · US Billboard year-end #1${by<1960?" (earliest on file)":by>2024?" (latest on file)":""}</small></div>
+ <div class="fact"><span>Headline of ${ey}</span><b class="num" style="font-size:1.05rem">${EV[ey]}</b><small>${by<1960||by>2025?"Nearest year on file":"The year you were born"}</small></div>
+ <div class="links" style="grid-column:1/-1;margin:0">${bb}<a href="https://en.wikipedia.org/wiki/${MN[bm-1]}_${bd}" target="_blank" rel="noopener">What happened on ${MN[bm-1]} ${bd}</a><a href="https://en.wikipedia.org/wiki/${by}" target="_blank" rel="noopener">The year ${by}</a></div>`;
+ const ev=Object.keys(EV).filter(k=>k>=by&&k<=ny);
+ $('#tl').innerHTML=ev.length?ev.map(k=>`<li><span class="y num">${k}</span><div>${EV[k]}<small>${k-by?"You were "+(k-by)+" years old":"The year you were born"}</small></div></li>`).join(""):"<li>No milestones on file yet for this range.</li>";
+ $('#out').hidden=false;pie();tick();$('#big').scrollIntoView({behavior:"smooth",block:"center"})}
+$('#sl').innerHTML=ACT.map((a,i)=>`<label><span>${a[0]}</span><input type="range" min="0" max="12" step="0.5" value="${a[1]}" data-i="${i}" aria-label="${a[0]} hours per day"><b>${a[1]}h</b></label>`).join("");
+$('#sl').addEventListener("input",e=>{const i=e.target.dataset.i;ACT[i][1]=+e.target.value;e.target.nextElementSibling.textContent=e.target.value+"h";pie()});
+$('#f').addEventListener("submit",e=>{e.preventDefault();go($('#dob').value)});
+setInterval(tick,1000);
+try{const s=localStorage.getItem("lc_dob");if(s){$('#dob').value=s;go(s)}}catch(e){}
+</script></body></html>
